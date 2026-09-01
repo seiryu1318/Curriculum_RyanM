@@ -3219,3 +3219,88 @@ html {
   border-radius: 0 !important;
   box-shadow: none !important;
 }
+
+/* ver.44 — centered mobile canvas and locked touch scale */
+@media (max-width: 820px) {
+  html {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+    touch-action: pan-y;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+  body.mobile-app {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    margin: 0;
+    overflow-x: hidden;
+    touch-action: pan-y;
+  }
+  .mobile-app *,
+  .mobile-app *::before,
+  .mobile-app *::after { box-sizing: border-box; }
+
+  .mobile-app .utility-links,
+  .mobile-app .hero__content,
+  .mobile-app .search-card,
+  .mobile-app .view-tabs,
+  .mobile-app .section-shell,
+  .mobile-app .section-shell--wide {
+    width: calc(100% - 24px) !important;
+    max-width: 520px !important;
+    margin-right: auto !important;
+    margin-left: auto !important;
+  }
+  .mobile-app .hero-title-row { justify-content: center; }
+  .mobile-app .hero__advice { width: 100%; }
+  .mobile-app .search-card__heading { text-align: center; }
+  .mobile-app .search-form,
+  .mobile-app .school-course-filter,
+  .mobile-app .school-course-filter__controls,
+  .mobile-app .table-frame,
+  .mobile-app .table-scroll,
+  .mobile-app .detail-workspace,
+  .mobile-app .detail-browser,
+  .mobile-app .result-card {
+    width: 100% !important;
+    min-width: 0 !important;
+    margin-right: auto !important;
+    margin-left: auto !important;
+  }
+  .mobile-app .curriculum-heading {
+    justify-content: center !important;
+    text-align: center;
+  }
+  .mobile-app .table-actions { justify-items: center; }
+  .mobile-app .legend {
+    width: min(100%, 390px) !important;
+    margin: 0 auto;
+    justify-items: start;
+  }
+  .mobile-app .highlight-toggle { margin-right: auto; margin-left: auto; }
+  .mobile-app .curriculum-table tbody tr { margin-right: auto; margin-left: auto; }
+  .mobile-app .curriculum-table tbody th { text-align: center; }
+  .mobile-app .curriculum-table tbody td {
+    grid-template-columns: minmax(72px, 24%) minmax(0, 1fr);
+    gap: 8px;
+  }
+  .mobile-app .curriculum-table tbody td::before { text-align: center; }
+  .mobile-app .subject-list {
+    width: 100%;
+    justify-items: stretch;
+  }
+  .mobile-app .course {
+    width: 100%;
+    justify-content: center;
+    text-align: center;
+  }
+  .mobile-app .input-wrap input,
+  .mobile-app .detail-control input,
+  .mobile-app .select-wrap select,
+  .mobile-app .detail-control select {
+    font-size: 16px !important;
+    touch-action: manipulation;
+  }
+}
