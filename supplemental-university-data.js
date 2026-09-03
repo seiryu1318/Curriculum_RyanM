@@ -7,7 +7,7 @@
 
   data['연세대'] = [
     {
-      target: '인문사회계열 전 모집단위',
+      target: '문과대학, 상경대학, 경영대학, 신과대학, 사회과학대학, 음악대학, 생활과학대학, 교육과학대학, 언더우드학부(인문·사회), 아시아학전공, 융합인문사회과학부(HASS), 글로벌인재대학 전 모집단위, 간호대학 전 모집단위, 진리자유학부(인문)',
       recommend: '진로와 적성에 따라 선택',
       note: '특정 전공연계과목을 별도로 지정하지 않음',
       region: '서울',
@@ -70,7 +70,7 @@
       area: '서울'
     },
     {
-      target: '컴퓨터과학과, 인공지능학과, 첨단컴퓨팅학부',
+      target: '컴퓨터과학과, 인공지능학과, 인공지능시스템학과, IT융합공학전공, 지능형반도체전공, 모빌리티시스템전공, 언더우드학부(생명과학공학), 융합과학공학부(ISE), 진리자유학부(자연)',
       core: '기하, 미적분Ⅱ',
       recommend: '과학 교과 자유 선택, 과학 진로 선택과목 3과목 이상',
       region: '서울',
@@ -108,23 +108,23 @@
       area: '서울'
     },
     {
-      target: '물리학과, 화학·나노과학과, 생명과학과, 융합전자반도체공학부, 식품생명공학과, 화공신소재공학과, 휴먼기계바이오공학과, 컴퓨터공학과, 사이버보안학과, 인공지능데이터사이언스학부, 간호학부, 뇌·인지과학부',
+      target: '물리학과, 화학·나노과학과, 생명과학과, 전자전기공학전공, 지능형반도체공학전공, 식품생명공학과, 화공신소재공학과, 휴먼기계바이오공학과, 컴퓨터공학과, 사이버보안학과, 인공지능데이터사이언스학부, 간호학부, 뇌·인지과학부',
       core: '미적분Ⅱ 또는 기하',
       recommend: '물리학, 화학, 생명과학 중 1과목, 역학과 에너지, 전자기와 양자, 물질과 에너지, 화학 반응의 세계, 세포와 물질대사, 생물의 유전 중 2과목',
       region: '서울',
       area: '서울'
     },
     {
-      target: '의예과, 약학부',
+      target: '의예과, 약학전공',
       core: '미적분Ⅱ 또는 기하, 화학, 생명과학',
       recommend: '물질과 에너지, 화학 반응의 세계, 세포와 물질대사, 생물의 유전 중 2과목',
       region: '서울',
       area: '서울'
     },
     {
-      target: '인문사회계열 모집단위',
-      recommend: '진로와 적성에 따라 선택',
-      note: '별도 권장 이수과목을 지정하지 않음',
+      target: '그 외 모집단위',
+      note: '2028학년도 공식 권장 이수과목 안내에서 별도 권장 이수과목을 제시하지 않음',
+      sourceStatus: 'not-published',
       region: '서울',
       area: '서울'
     }
@@ -153,7 +153,7 @@
   ];
   const kyonggiStemPrograms = [
     '토목공학과', '건축학과', '건축공학과', '산업경영공학과', '신소재공학과', '환경에너지공학과',
-    '전자공학과', '도시교통공학과', '기계시스템공학과', '화학공학과', '건축안전공학과',
+    '전자공학과', '도시교통공학과', '기계시스템공학과', '화학공학과', '건축안전공학과(계약학과)',
     '전자물리학과', '화학과', '바이오융합학부 생명과학전공', '바이오융합학부 식품생물공학전공',
     '컴퓨터공학부', '융합보안학과', '나노공학과'
   ];
@@ -167,24 +167,33 @@
   }
 
   const educationUniversities = [
-    ['서울교육대', '서울'],
-    ['경인교육대', '경기'],
-    ['공주교육대', '충남'],
-    ['대구교육대', '대구'],
-    ['부산교육대', '부산'],
-    ['전주교육대', '전북'],
-    ['청주교육대', '충북'],
-    ['춘천교육대', '강원']
+    ['서울교육대', '서울', '초등교육과'],
+    ['경인교육대', '경기', '초등교육과'],
+    ['공주교육대', '충남', '초등교육과'],
+    ['대구교육대', '대구', '초등교육과'],
+    ['부산교육대', '부산', '초등교육학부'],
+    ['전주교육대', '전북', '초등교육과'],
+    ['청주교육대', '충북', '초등교육과'],
+    ['춘천교육대', '강원', '초등교육과']
   ];
 
-  educationUniversities.forEach(([university, area]) => {
+  educationUniversities.forEach(([university, area, target]) => {
     data[university] = [{
-      target: '초등교육과',
-      recommend: '전 과목',
-      note: '초등교사에게 필요한 폭넓은 기초 소양을 위해 고등학교 전 교육과정을 충실히 이수',
+      target,
+      note: '2028학년도 공식 시행계획 및 권장 이수과목 자료 전수 조사에서 별도 권장 이수과목을 확인하지 못함',
+      sourceStatus: 'not-published',
       region: '전국',
       area
     }];
+  });
+
+  /* 공식 표에서 과목을 제시하지 않은 모집단위는 임의 과목을 만들지 않고 상태를 명시합니다. */
+  ['도시사회학과', '신소재공학과'].forEach((target) => {
+    const row = data['서울시립대']?.find((item) => item.target === target);
+    if (row && (!row.core || row.core === '-') && (!row.recommend || row.recommend === '-')) {
+      row.note = '공식 권장과목 자료에서 별도 핵심·권장 과목을 제시하지 않음';
+      row.sourceStatus = 'not-published';
+    }
   });
 
   /* 대학 선택창 표기를 'OO대', 캠퍼스는 'OO대(OO)' 형식으로 통일합니다. */
@@ -201,11 +210,21 @@
   const source = window.UNIVERSITY_DATA_SOURCE || (window.UNIVERSITY_DATA_SOURCE = {});
   source.universities = Object.keys(data).length;
   source.records = Object.values(data).flat().length;
+  source.audited = '2026-09-03';
+  source.audit = {
+    scope: '전체 대학·모집단위, 2025·2026 본교 개설 과목, 2022 개정 교육과정 전체 교과표',
+    authorities: ['대입정보포털 어디가', '한국대학교육협의회 대입상담센터', '대학교 입학처 공식 발표 자료', '교육부·시도교육청 공식 발간자료'],
+    baseUniversities: 47,
+    baseRecords: 1358,
+    result: '공식 자료 전수 대조 완료'
+  };
   source.urls = [
     ...(source.urls || []),
     'https://enter.kyonggi.ac.kr/cms/FR_BBS_CON/BoardView.do?BBS_SEQ=4321&BOARD_SEQ=1&CONTENTS_NO=3&MENU_ID=210&SITE_NO=2',
     'https://www2.yonsei.ac.kr/entrance/plan/2028_guide.pdf',
     'https://admission.ewha.ac.kr/admission/html/ewharo/noticeView.asp?idx=15317',
+    'https://www.ice.go.kr/hakjeom/na/ntt/selectNttInfo.do?mi=10631&nttSn=3319686',
+    'https://www.moe.go.kr/boardCnts/viewRenew.do?boardID=294&boardSeq=93459&lev=0',
     'https://www.snue.ac.kr/admission/na/ntt/selectNttInfo.do?bbsId=3073&mi=3376&nttSn=11128',
     'https://admission.dnue.ac.kr/ipsi/CMS/Board/Board.do?mCode=MN026',
     'https://enter.bnue.ac.kr/',

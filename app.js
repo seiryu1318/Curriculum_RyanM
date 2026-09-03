@@ -1,5 +1,5 @@
 // 이 값을 '01', '02', '03'처럼 올리면 문서 제목과 화면 버전이 함께 갱신됩니다.
-const APP_VERSION = '45';
+const APP_VERSION = '46';
 const WELCOME_HIDE_UNTIL_KEY = 'ryanSubjectFinderWelcomeHideUntil';
 const ONE_DAY_MS = 24 * 60 * 60 * 1000;
 const APP_TITLE = `라이언의 2022 선택과목 검색기(ver.${APP_VERSION})`;
@@ -48,7 +48,7 @@ const SUBJECT_GROUPS = [
     group: '체육',
     common: [],
     general: ['체육1', '체육2'],
-    career: ['운동과 건강', '스포츠 문화', '스포츠 과학*'],
+    career: ['운동과 건강', '스포츠 문화*', '스포츠 과학*'],
     convergence: ['스포츠 생활1', '스포츠 생활2']
   },
   {
