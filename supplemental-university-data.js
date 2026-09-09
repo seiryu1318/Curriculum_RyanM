@@ -210,7 +210,7 @@
   const source = window.UNIVERSITY_DATA_SOURCE || (window.UNIVERSITY_DATA_SOURCE = {});
   source.universities = Object.keys(data).length;
   source.records = Object.values(data).flat().length;
-  source.audited = '2026-09-03';
+  source.audited = '2026-09-09';
   source.audit = {
     scope: '전체 대학·모집단위, 2025·2026 본교 개설 과목, 2022 개정 교육과정 전체 교과표',
     authorities: ['대입정보포털 어디가', '한국대학교육협의회 대입상담센터', '대학교 입학처 공식 발표 자료', '교육부·시도교육청 공식 발간자료'],
@@ -220,6 +220,7 @@
   };
   source.urls = [
     ...(source.urls || []),
+    'https://www.adiga.kr/uct/ces/archiveView.do?menuId=PCUCTCES1000&prtlBbsId=26634',
     'https://enter.kyonggi.ac.kr/cms/FR_BBS_CON/BoardView.do?BBS_SEQ=4321&BOARD_SEQ=1&CONTENTS_NO=3&MENU_ID=210&SITE_NO=2',
     'https://www2.yonsei.ac.kr/entrance/plan/2028_guide.pdf',
     'https://admission.ewha.ac.kr/admission/html/ewharo/noticeView.asp?idx=15317',
@@ -228,6 +229,10 @@
     'https://www.snue.ac.kr/admission/na/ntt/selectNttInfo.do?bbsId=3073&mi=3376&nttSn=11128',
     'https://admission.dnue.ac.kr/ipsi/CMS/Board/Board.do?mCode=MN026',
     'https://enter.bnue.ac.kr/',
-    'https://www.cnue.ac.kr/enter/communication/plan.do?articleNo=41320&mode=view'
+    'https://www.cnue.ac.kr/enter/communication/plan.do?articleNo=41320&mode=view',
+    'https://ipsi.ginue.ac.kr/ipsi/Main.do',
+    'https://www.gjue.ac.kr/',
+    'https://www.jnue.kr/portal/enter/search/total_search.do?menuId=M0012000500000000',
+    'https://www.cje.ac.kr/ipsi/'
   ];
 })();

@@ -1,5 +1,5 @@
 // 이 값을 '01', '02', '03'처럼 올리면 문서 제목과 화면 버전이 함께 갱신됩니다.
-const APP_VERSION = '46';
+const APP_VERSION = '47';
 const WELCOME_HIDE_UNTIL_KEY = 'ryanSubjectFinderWelcomeHideUntil';
 const ONE_DAY_MS = 24 * 60 * 60 * 1000;
 const APP_TITLE = `라이언의 2022 선택과목 검색기(ver.${APP_VERSION})`;
@@ -169,6 +169,7 @@ const state = {
   core: new Set(),
   recommended: new Set(),
   importantGroups: new Set(),
+  statedSubjectGroups: new Set(),
   highlightOnly: false,
   exactMatch: false,
   schoolCohort: '2026',
@@ -200,6 +201,11 @@ const elements = {
   recommendedSubjects: document.querySelector('#recommendedSubjects'),
   additionalNoteBlock: document.querySelector('#additionalNoteBlock'),
   additionalNote: document.querySelector('#additionalNote'),
+  commonSummary: document.querySelector('#commonSummary'),
+  commonSummaryContext: document.querySelector('#commonSummaryContext'),
+  commonSummaryCore: document.querySelector('#commonSummaryCore'),
+  commonSummaryRecommended: document.querySelector('#commonSummaryRecommended'),
+  commonSummaryMethod: document.querySelector('#commonSummaryMethod'),
   curriculumBody: document.querySelector('#curriculumBody'),
   highlightOnly: document.querySelector('#highlightOnly'),
   clearHighlight: document.querySelector('#clearHighlight'),
@@ -445,6 +451,131 @@ function extractSubjectGroups(rawText = '') {
   return rules.filter(([, pattern]) => pattern.test(source)).map(([label]) => label);
 }
 
+const COMMON_SUMMARY_LIMIT = 10;
+const COMMON_SUMMARY_ORDER = new Map([
+  ...Object.keys(SUBJECT_GROUP_ROWS),
+  ...ALL_SUBJECTS,
+  '전 과목'
+].map((item, index) => [item, index]));
+
+function extractRecommendationItems(rawText = '') {
+  const broad = compact(rawText) === '전과목' ? ['전 과목'] : [];
+  return [...new Set([
+    ...extractSubjectGroups(rawText),
+    ...extractSubjects(rawText),
+    ...broad
+  ])];
+}
+
+function summarizeRecommendationField(matches, field) {
+  const itemsByUniversity = new Map();
+
+  matches.forEach((entry) => {
+    const items = extractRecommendationItems(entry.row[field]);
+    if (!items.length) return;
+    if (!itemsByUniversity.has(entry.university)) itemsByUniversity.set(entry.university, new Set());
+    items.forEach((item) => itemsByUniversity.get(entry.university).add(item));
+  });
+
+  const counts = new Map();
+  itemsByUniversity.forEach((items) => {
+    items.forEach((item) => counts.set(item, (counts.get(item) || 0) + 1));
+  });
+
+  const universityCount = itemsByUniversity.size;
+  const minimumCount = universityCount > 1 ? 2 : 1;
+  const items = [...counts.entries()]
+    .filter(([, count]) => count >= minimumCount)
+    .map(([label, count]) => ({ label, count }))
+    .sort((a, b) =>
+      b.count - a.count
+      || (COMMON_SUMMARY_ORDER.get(a.label) ?? Number.MAX_SAFE_INTEGER) - (COMMON_SUMMARY_ORDER.get(b.label) ?? Number.MAX_SAFE_INTEGER)
+      || a.label.localeCompare(b.label, 'ko')
+    );
+
+  return { universityCount, items };
+}
+
+function renderCommonSummaryItems(container, summary, categoryLabel) {
+  const visibleItems = summary.items.slice(0, COMMON_SUMMARY_LIMIT);
+  if (!visibleItems.length) {
+    const message = summary.universityCount
+      ? `여러 대학에서 공통으로 반복 제시된 ${categoryLabel} 없음`
+      : `공식 자료에 별도 ${categoryLabel} 미제시`;
+    container.innerHTML = `<span class="common-summary__empty">${message}</span>`;
+    return visibleItems;
+  }
+
+  container.innerHTML = visibleItems.map(({ label, count }) => {
+    const isGroup = Object.hasOwn(SUBJECT_GROUP_ROWS, label);
+    const frequency = elements.universitySelect.value && summary.universityCount === 1
+      ? '해당 대학'
+      : `${count}/${summary.universityCount}개교`;
+    return `
+      <span class="common-summary__tag${isGroup ? ' common-summary__tag--group' : ''}">
+        <strong>${escapeHtml(label)}</strong>
+        <small>${frequency}</small>
+      </span>`;
+  }).join('');
+  return visibleItems;
+}
+
+function renderCommonSummary(matches = []) {
+  if (!matches.length) {
+    elements.commonSummary.hidden = true;
+    elements.commonSummaryContext.textContent = '';
+    elements.commonSummaryCore.innerHTML = '';
+    elements.commonSummaryRecommended.innerHTML = '';
+    elements.commonSummaryMethod.textContent = '';
+    return null;
+  }
+
+  const universities = new Set(matches.map((entry) => entry.university));
+  const query = elements.majorInput.value.trim();
+  const selectedUniversity = elements.universitySelect.value;
+  const core = summarizeRecommendationField(matches, 'core');
+  const recommended = summarizeRecommendationField(matches, 'recommend');
+  const visibleCore = renderCommonSummaryItems(elements.commonSummaryCore, core, '핵심 과목·교과군');
+  const visibleRecommended = renderCommonSummaryItems(elements.commonSummaryRecommended, recommended, '권장 과목·교과군');
+  const scope = selectedUniversity || `전국 ${universities.size}개 대학`;
+  const truncated = core.items.length > COMMON_SUMMARY_LIMIT || recommended.items.length > COMMON_SUMMARY_LIMIT;
+
+  elements.commonSummaryContext.textContent = `“${query}” · ${scope} · ${matches.length}개 모집단위`;
+  elements.commonSummaryMethod.textContent = selectedUniversity
+    ? `검색된 모집단위의 공식 발표 과목을 통합했습니다. 본교 개설 여부와는 무관합니다.${truncated ? ' 제시 빈도 상위 10개를 표시합니다.' : ''}`
+    : `같은 대학의 복수 모집단위는 대학별 1회로 집계하고, 2개 대학 이상에서 반복 제시된 항목을 표시합니다. 본교 개설 여부와는 무관합니다.${truncated ? ' 제시 빈도 상위 10개를 표시합니다.' : ''}`;
+  elements.commonSummary.hidden = false;
+
+  return { visibleCore, visibleRecommended };
+}
+
+function applyCommonSummaryHighlights(summary) {
+  if (!summary) return;
+  const coreLabels = summary.visibleCore.map((item) => item.label);
+  const recommendedLabels = summary.visibleRecommended.map((item) => item.label);
+  const groupLabels = [...coreLabels, ...recommendedLabels].filter((label) => Object.hasOwn(SUBJECT_GROUP_ROWS, label));
+  const coreSubjects = coreLabels.filter((label) => ALL_SUBJECTS.includes(label));
+  const recommendedSubjects = recommendedLabels.filter((label) => ALL_SUBJECTS.includes(label));
+  const statedRows = groupLabels.map((label) => SUBJECT_GROUP_ROWS[label]).filter(Boolean);
+  const highlightedSubjects = new Set([...coreSubjects, ...recommendedSubjects]);
+  const highlightedRows = SUBJECT_GROUPS.filter((row) =>
+    [...row.common, ...row.general, ...row.career, ...row.convergence]
+      .some((subject) => highlightedSubjects.has(subject.replace(/\*$/, '')))
+  ).map((row) => row.group);
+  const selectedEntry = state.searchIndex.find((entry) => entry.key === state.selectedKey);
+  const selectedTrack = selectedEntry ? inferAcademicTrack(selectedEntry) : '';
+  const contextRows = selectedEntry
+    ? [...(TRACK_GROUPS[selectedTrack] || []), ...inferArtsSubjectGroups(selectedEntry)]
+    : [];
+
+  state.core = new Set(coreSubjects);
+  state.recommended = new Set(recommendedSubjects);
+  state.statedSubjectGroups = new Set(statedRows);
+  state.importantGroups = new Set([...contextRows, ...statedRows, ...highlightedRows]);
+  elements.highlightOnly.disabled = !coreSubjects.length && !recommendedSubjects.length && !statedRows.length;
+  elements.clearHighlight.hidden = false;
+}
+
 function currentSchoolOffering() {
   return SCHOOL_OFFERINGS[state.schoolCohort];
 }
@@ -508,10 +639,12 @@ function renderCurriculum() {
     const visibleRowSubjects = state.schoolOnly ? rowSubjects.filter(isSchoolOffered) : rowSubjects;
     const hasHighlight = visibleRowSubjects.some((subject) => state.core.has(subject) || state.recommended.has(subject));
     const isImportantGroup = state.importantGroups.has(row.group);
+    const isStatedSubjectGroup = state.statedSubjectGroups.has(row.group);
     const rowClasses = [
       isImportantGroup ? 'row-important-group' : '',
+      isStatedSubjectGroup ? 'row-stated-subject-group' : '',
       hasHighlight ? 'row-has-highlight' : '',
-      state.highlightOnly && !hasHighlight ? 'row-is-muted' : ''
+      state.highlightOnly && !hasHighlight && !isStatedSubjectGroup ? 'row-is-muted' : ''
     ].filter(Boolean).join(' ');
     return `
       <tr class="${rowClasses}">
@@ -709,6 +842,7 @@ function selectResult(key, options = {}) {
     state.recommended = new Set(recommendedSubjects);
     const track = inferAcademicTrack(entry);
     const statedGroupRows = [...coreGroups, ...recommendedGroups].map((group) => SUBJECT_GROUP_ROWS[group]).filter(Boolean);
+    state.statedSubjectGroups = new Set(statedGroupRows);
     const highlightedSubjectSet = new Set([...coreSubjects, ...recommendedSubjects].map((subject) => subject.replace(/\*$/, '')));
     const highlightedSubjectRows = SUBJECT_GROUPS.filter((row) =>
       [...row.common, ...row.general, ...row.career, ...row.convergence]
@@ -805,6 +939,7 @@ function runSearch(preferredKey) {
 
   const matches = findMatches();
   if (!matches.length) {
+    resetHighlights();
     elements.majorInput.setCustomValidity('일치하는 대학 또는 모집단위가 없습니다. 더 짧은 검색어를 입력해 주세요.');
     elements.majorInput.reportValidity();
     return;
@@ -814,8 +949,10 @@ function runSearch(preferredKey) {
   state.matches = matches;
   const selected = preferredKey && matches.some((entry) => entry.key === preferredKey) ? preferredKey : matches[0].key;
   selectResult(selected, { updateHighlight: true });
+  applyCommonSummaryHighlights(renderCommonSummary(matches));
+  renderCurriculum();
   setActiveView('search', { scroll: false });
-  document.querySelector('.curriculum-heading').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  elements.commonSummary.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 function resetHighlights() {
@@ -824,10 +961,12 @@ function resetHighlights() {
   state.core = new Set();
   state.recommended = new Set();
   state.importantGroups = new Set();
+  state.statedSubjectGroups = new Set();
   state.highlightOnly = false;
   elements.highlightOnly.checked = false;
   elements.highlightOnly.disabled = true;
   elements.clearHighlight.hidden = true;
+  renderCommonSummary();
   renderCurriculum();
 }
 
@@ -850,6 +989,8 @@ function scheduleAutoHighlight() {
 
     state.matches = matches;
     selectResult(matches[0].key, { updateHighlight: true });
+    applyCommonSummaryHighlights(renderCommonSummary(matches));
+    renderCurriculum();
     setActiveView('search', { scroll: false });
   }, 120);
 }
