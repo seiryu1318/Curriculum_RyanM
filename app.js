@@ -1,5 +1,5 @@
 // 이 값을 '01', '02', '03'처럼 올리면 문서 제목과 화면 버전이 함께 갱신됩니다.
-const APP_VERSION = '47';
+const APP_VERSION = '48';
 const WELCOME_HIDE_UNTIL_KEY = 'ryanSubjectFinderWelcomeHideUntil';
 const ONE_DAY_MS = 24 * 60 * 60 * 1000;
 const APP_TITLE = `라이언의 2022 선택과목 검색기(ver.${APP_VERSION})`;
@@ -202,10 +202,8 @@ const elements = {
   additionalNoteBlock: document.querySelector('#additionalNoteBlock'),
   additionalNote: document.querySelector('#additionalNote'),
   commonSummary: document.querySelector('#commonSummary'),
-  commonSummaryContext: document.querySelector('#commonSummaryContext'),
   commonSummaryCore: document.querySelector('#commonSummaryCore'),
   commonSummaryRecommended: document.querySelector('#commonSummaryRecommended'),
-  commonSummaryMethod: document.querySelector('#commonSummaryMethod'),
   curriculumBody: document.querySelector('#curriculumBody'),
   highlightOnly: document.querySelector('#highlightOnly'),
   clearHighlight: document.querySelector('#clearHighlight'),
@@ -523,27 +521,15 @@ function renderCommonSummaryItems(container, summary, categoryLabel) {
 function renderCommonSummary(matches = []) {
   if (!matches.length) {
     elements.commonSummary.hidden = true;
-    elements.commonSummaryContext.textContent = '';
     elements.commonSummaryCore.innerHTML = '';
     elements.commonSummaryRecommended.innerHTML = '';
-    elements.commonSummaryMethod.textContent = '';
     return null;
   }
 
-  const universities = new Set(matches.map((entry) => entry.university));
-  const query = elements.majorInput.value.trim();
-  const selectedUniversity = elements.universitySelect.value;
   const core = summarizeRecommendationField(matches, 'core');
   const recommended = summarizeRecommendationField(matches, 'recommend');
   const visibleCore = renderCommonSummaryItems(elements.commonSummaryCore, core, '핵심 과목·교과군');
   const visibleRecommended = renderCommonSummaryItems(elements.commonSummaryRecommended, recommended, '권장 과목·교과군');
-  const scope = selectedUniversity || `전국 ${universities.size}개 대학`;
-  const truncated = core.items.length > COMMON_SUMMARY_LIMIT || recommended.items.length > COMMON_SUMMARY_LIMIT;
-
-  elements.commonSummaryContext.textContent = `“${query}” · ${scope} · ${matches.length}개 모집단위`;
-  elements.commonSummaryMethod.textContent = selectedUniversity
-    ? `검색된 모집단위의 공식 발표 과목을 통합했습니다. 본교 개설 여부와는 무관합니다.${truncated ? ' 제시 빈도 상위 10개를 표시합니다.' : ''}`
-    : `같은 대학의 복수 모집단위는 대학별 1회로 집계하고, 2개 대학 이상에서 반복 제시된 항목을 표시합니다. 본교 개설 여부와는 무관합니다.${truncated ? ' 제시 빈도 상위 10개를 표시합니다.' : ''}`;
   elements.commonSummary.hidden = false;
 
   return { visibleCore, visibleRecommended };

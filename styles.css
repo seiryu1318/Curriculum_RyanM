@@ -3365,22 +3365,10 @@ html {
 }
 .mobile-app .common-summary[hidden] { display: none !important; }
 .mobile-app .common-summary__heading {
-  display: flex;
-  gap: 7px;
-  align-items: flex-start;
-  flex-direction: column;
+  display: block;
   margin-bottom: 14px;
 }
-.mobile-app .common-summary__eyebrow {
-  display: block;
-  margin-bottom: 4px;
-  color: #b9d984;
-  font-size: 10px;
-  font-weight: 850;
-  letter-spacing: .08em;
-}
 .mobile-app .common-summary h2 { margin: 0; color: #f4ffef; font-size: 21px; letter-spacing: -.035em; }
-.mobile-app .common-summary__heading p { margin: 0; color: #b8cecb; font-size: 11px; font-weight: 750; line-height: 1.5; }
 .mobile-app .common-summary__grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 9px; }
 .mobile-app .common-summary__panel {
   min-width: 0;
@@ -3415,7 +3403,6 @@ html {
 .mobile-app .common-summary__panel--recommended .common-summary__tag--group { color: #e8edff; background: rgba(77, 107, 211, .24); border-color: rgba(155, 179, 255, .42); }
 .mobile-app .common-summary__tag--group strong { font-weight: 950; }
 .mobile-app .common-summary__empty { color: #a5bcba; font-size: 11px; line-height: 1.55; }
-.mobile-app .common-summary__method { margin: 12px 1px 0; color: #91acab; font-size: 10px; line-height: 1.55; }
 
 .mobile-app .curriculum-table tbody tr.row-stated-subject-group > th,
 .mobile-app .curriculum-table tbody tr.row-stated-subject-group > td {
