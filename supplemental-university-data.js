@@ -210,7 +210,7 @@
   const source = window.UNIVERSITY_DATA_SOURCE || (window.UNIVERSITY_DATA_SOURCE = {});
   source.universities = Object.keys(data).length;
   source.records = Object.values(data).flat().length;
-  source.audited = '2026-09-09';
+  source.audited = '2026-09-16';
   source.audit = {
     scope: '전체 대학·모집단위, 2025·2026 본교 개설 과목, 2022 개정 교육과정 전체 교과표',
     authorities: ['대입정보포털 어디가', '한국대학교육협의회 대입상담센터', '대학교 입학처 공식 발표 자료', '교육부·시도교육청 공식 발간자료'],

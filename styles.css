@@ -3433,3 +3433,15 @@ html {
 @media (max-width: 330px) {
   .mobile-app .common-summary__items { grid-template-columns: minmax(0, 1fr); }
 }
+
+/* ver.49 — keep one glass layer inside the search card */
+.mobile-app .search-form,
+.mobile-app .school-course-filter,
+.mobile-app .school-course-filter .cohort-selector label,
+.mobile-app .school-course-filter .school-course-list-button {
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
+
+.mobile-app .search-form { background: transparent !important; }
+.mobile-app .search-actions .exact-match-option { min-height: 40px !important; }
