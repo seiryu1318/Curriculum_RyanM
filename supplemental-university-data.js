@@ -196,6 +196,12 @@
     }
   });
 
+  /* 공식 2022 개정 교육과정 과목명에 맞춰 집계표의 명백한 오자를 표시 단계에서 교정합니다. */
+  const jeonjuScienceEducation = data['전주대']?.find((item) => item.target === '과학교육과');
+  if (jeonjuScienceEducation?.core?.includes('물리과 에너지')) {
+    jeonjuScienceEducation.core = jeonjuScienceEducation.core.replace('물리과 에너지', '물질과 에너지');
+  }
+
   /* 대학 선택창 표기를 'OO대', 캠퍼스는 'OO대(OO)' 형식으로 통일합니다. */
   const universityNameAliases = {
     '경성대학교': '경성대',
@@ -210,17 +216,24 @@
   const source = window.UNIVERSITY_DATA_SOURCE || (window.UNIVERSITY_DATA_SOURCE = {});
   source.universities = Object.keys(data).length;
   source.records = Object.values(data).flat().length;
-  source.audited = '2026-09-16';
+  source.audited = '2026-10-14';
   source.audit = {
-    scope: '전체 대학·모집단위, 2025·2026 본교 개설 과목, 2022 개정 교육과정 전체 교과표',
+    scope: '전체 대학·모집단위, 대표 모집단위 16개, 2025·2026 본교 개설 과목, 2022 개정 교육과정 전체 교과표',
     authorities: ['대입정보포털 어디가', '한국대학교육협의회 대입상담센터', '대학교 입학처 공식 발표 자료', '교육부·시도교육청 공식 발간자료'],
     baseUniversities: 47,
     baseRecords: 1358,
+    representativeMajors: 16,
+    representativeUniversityMajorKeys: 235,
+    corrections: {
+      representativeMixedUniversityRows: 2,
+      officialSubjectNameTypos: 1
+    },
     result: '공식 자료 전수 대조 완료'
   };
   source.urls = [
     ...(source.urls || []),
     'https://www.adiga.kr/uct/ces/archiveView.do?menuId=PCUCTCES1000&prtlBbsId=26634',
+    'https://www.adiga.kr/uct/ces/archiveView.do?menuId=PCUCTCES1000&prtlBbsId=26611',
     'https://enter.kyonggi.ac.kr/cms/FR_BBS_CON/BoardView.do?BBS_SEQ=4321&BOARD_SEQ=1&CONTENTS_NO=3&MENU_ID=210&SITE_NO=2',
     'https://www2.yonsei.ac.kr/entrance/plan/2028_guide.pdf',
     'https://admission.ewha.ac.kr/admission/html/ewharo/noticeView.asp?idx=15317',

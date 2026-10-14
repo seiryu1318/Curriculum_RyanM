@@ -1,5 +1,5 @@
 // 이 값을 '01', '02', '03'처럼 올리면 문서 제목과 화면 버전이 함께 갱신됩니다.
-const APP_VERSION = '49';
+const APP_VERSION = '50';
 const WELCOME_HIDE_UNTIL_KEY = 'ryanSubjectFinderWelcomeHideUntil';
 const ONE_DAY_MS = 24 * 60 * 60 * 1000;
 const APP_TITLE = `라이언의 2022 선택과목 검색기(ver.${APP_VERSION})`;
@@ -121,6 +121,7 @@ Object.values(SCHOOL_OFFERINGS).forEach((entry) => {
 });
 
 const DATA = window.UNIVERSITY_DATA || {};
+const REPRESENTATIVE_DATA = window.REPRESENTATIVE_MAJOR_DATA || { majors: {} };
 const ALL_SUBJECTS = [...new Set(SUBJECT_GROUPS.flatMap((row) => [
   ...row.common,
   ...row.general,
@@ -204,6 +205,9 @@ const elements = {
   commonSummary: document.querySelector('#commonSummary'),
   commonSummaryCore: document.querySelector('#commonSummaryCore'),
   commonSummaryRecommended: document.querySelector('#commonSummaryRecommended'),
+  commonSummaryRepresentativePanel: document.querySelector('#commonSummaryRepresentativePanel'),
+  commonSummaryRepresentativeTitle: document.querySelector('#commonSummaryRepresentativeTitle'),
+  commonSummaryRepresentative: document.querySelector('#commonSummaryRepresentative'),
   curriculumBody: document.querySelector('#curriculumBody'),
   highlightOnly: document.querySelector('#highlightOnly'),
   clearHighlight: document.querySelector('#clearHighlight'),
@@ -494,8 +498,8 @@ function summarizeRecommendationField(matches, field) {
   return { universityCount, items };
 }
 
-function renderCommonSummaryItems(container, summary, categoryLabel) {
-  const visibleItems = summary.items.slice(0, COMMON_SUMMARY_LIMIT);
+function renderCommonSummaryItems(container, summary, categoryLabel, options = {}) {
+  const visibleItems = summary.items.slice(0, options.limit || COMMON_SUMMARY_LIMIT);
   if (!visibleItems.length) {
     const message = summary.universityCount
       ? `여러 대학에서 공통으로 반복 제시된 ${categoryLabel} 없음`
@@ -506,7 +510,7 @@ function renderCommonSummaryItems(container, summary, categoryLabel) {
 
   container.innerHTML = visibleItems.map(({ label, count }) => {
     const isGroup = Object.hasOwn(SUBJECT_GROUP_ROWS, label);
-    const frequency = elements.universitySelect.value && summary.universityCount === 1
+    const frequency = !options.alwaysShowCount && elements.universitySelect.value && summary.universityCount === 1
       ? '해당 대학'
       : `${count}/${summary.universityCount}개교`;
     return `
@@ -518,27 +522,52 @@ function renderCommonSummaryItems(container, summary, categoryLabel) {
   return visibleItems;
 }
 
+function findRepresentativeMajorSummary(query = elements.majorInput.value) {
+  const normalizedQuery = compact(query);
+  if (!normalizedQuery) return null;
+  for (const [major, summary] of Object.entries(REPRESENTATIVE_DATA.majors || {})) {
+    if ((summary.aliases || [major]).some((alias) => compact(alias) === normalizedQuery)) {
+      return { major, ...summary };
+    }
+  }
+  return null;
+}
+
 function renderCommonSummary(matches = []) {
   if (!matches.length) {
     elements.commonSummary.hidden = true;
     elements.commonSummaryCore.innerHTML = '';
     elements.commonSummaryRecommended.innerHTML = '';
+    elements.commonSummaryRepresentative.innerHTML = '';
+    elements.commonSummaryRepresentativePanel.hidden = true;
     return null;
   }
 
   const core = summarizeRecommendationField(matches, 'core');
   const recommended = summarizeRecommendationField(matches, 'recommend');
+  const representative = findRepresentativeMajorSummary();
   const visibleCore = renderCommonSummaryItems(elements.commonSummaryCore, core, '핵심 과목·교과군');
   const visibleRecommended = renderCommonSummaryItems(elements.commonSummaryRecommended, recommended, '권장 과목·교과군');
+  const visibleRepresentative = representative
+    ? renderCommonSummaryItems(elements.commonSummaryRepresentative, representative, '대표 모집단위 반영 과목', {
+        limit: representative.items.length,
+        alwaysShowCount: true
+      })
+    : [];
+  elements.commonSummaryRepresentativePanel.hidden = !representative;
+  if (representative) elements.commonSummaryRepresentativeTitle.textContent = `대표 모집단위 반영 과목 · ${representative.major}`;
   elements.commonSummary.hidden = false;
 
-  return { visibleCore, visibleRecommended };
+  return { visibleCore, visibleRecommended, visibleRepresentative };
 }
 
 function applyCommonSummaryHighlights(summary) {
   if (!summary) return;
   const coreLabels = summary.visibleCore.map((item) => item.label);
-  const recommendedLabels = summary.visibleRecommended.map((item) => item.label);
+  const recommendedLabels = [
+    ...summary.visibleRecommended,
+    ...(summary.visibleRepresentative || [])
+  ].map((item) => item.label);
   const groupLabels = [...coreLabels, ...recommendedLabels].filter((label) => Object.hasOwn(SUBJECT_GROUP_ROWS, label));
   const coreSubjects = coreLabels.filter((label) => ALL_SUBJECTS.includes(label));
   const recommendedSubjects = recommendedLabels.filter((label) => ALL_SUBJECTS.includes(label));

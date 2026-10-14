@@ -3379,10 +3379,16 @@ html {
 }
 .mobile-app .common-summary__panel--core { box-shadow: inset 3px 0 0 rgba(184, 235, 114, .75); }
 .mobile-app .common-summary__panel--recommended { box-shadow: inset 3px 0 0 rgba(120, 156, 255, .78); }
+.mobile-app .common-summary__panel--representative {
+  grid-column: 1 / -1;
+  box-shadow: inset 3px 0 0 rgba(91, 222, 202, .78);
+}
+.mobile-app .common-summary__panel[hidden] { display: none !important; }
 .mobile-app .common-summary__panel h3 { display: flex; gap: 8px; align-items: center; margin: 0 0 11px; color: #eff9f7; font-size: 14px; }
 .mobile-app .common-summary__panel h3 i { width: 8px; height: 8px; flex: 0 0 auto; border-radius: 50%; }
 .mobile-app .common-summary__panel--core h3 i { background: #b8eb72; box-shadow: 0 0 10px rgba(184, 235, 114, .5); }
 .mobile-app .common-summary__panel--recommended h3 i { background: #789cff; box-shadow: 0 0 10px rgba(120, 156, 255, .48); }
+.mobile-app .common-summary__panel--representative h3 i { background: #5bdeca; box-shadow: 0 0 10px rgba(91, 222, 202, .46); }
 .mobile-app .common-summary__items { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 7px; min-width: 0; }
 .mobile-app .common-summary__tag {
   display: inline-flex;
@@ -3401,6 +3407,8 @@ html {
 .mobile-app .common-summary__tag small { flex: 0 0 auto; color: #a9c2bf; font-size: 9px; font-weight: 800; }
 .mobile-app .common-summary__panel--core .common-summary__tag--group { color: #f3ffde; background: rgba(143, 189, 78, .2); border-color: rgba(197, 230, 143, .42); }
 .mobile-app .common-summary__panel--recommended .common-summary__tag--group { color: #e8edff; background: rgba(77, 107, 211, .24); border-color: rgba(155, 179, 255, .42); }
+.mobile-app .common-summary__panel--representative .common-summary__tag { background: rgba(91, 222, 202, .08); border-color: rgba(139, 229, 215, .2); }
+.mobile-app .common-summary__panel--representative .common-summary__tag--group { color: #efffd9; background: rgba(174, 208, 111, .16); border-color: rgba(205, 230, 159, .34); }
 .mobile-app .common-summary__tag--group strong { font-weight: 950; }
 .mobile-app .common-summary__empty { color: #a5bcba; font-size: 11px; line-height: 1.55; }
 
