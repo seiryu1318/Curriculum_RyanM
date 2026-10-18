@@ -216,17 +216,27 @@
   const source = window.UNIVERSITY_DATA_SOURCE || (window.UNIVERSITY_DATA_SOURCE = {});
   source.universities = Object.keys(data).length;
   source.records = Object.values(data).flat().length;
-  source.audited = '2026-10-14';
+  source.audited = '2026-10-19';
   source.audit = {
-    scope: '전체 대학·모집단위, 대표 모집단위 16개, 2025·2026 본교 개설 과목, 2022 개정 교육과정 전체 교과표',
-    authorities: ['대입정보포털 어디가', '한국대학교육협의회 대입상담센터', '대학교 입학처 공식 발표 자료', '교육부·시도교육청 공식 발간자료'],
+    scope: '전체 대학·모집단위, 대표 모집단위 16개, 2025·2026 본교 개설 과목, 2022 개정 교육과정 보통교과 155개 및 과목별 안내',
+    authorities: ['대입정보포털 어디가', '한국대학교육협의회 대입상담센터', '대학교 입학처 공식 발표 자료', '교육부·한국교육과정평가원 고교학점제 공식자료', '국가교육위원회·시도교육청 공식 고시·발간자료'],
     baseUniversities: 47,
     baseRecords: 1358,
     representativeMajors: 16,
     representativeUniversityMajorKeys: 235,
     corrections: {
       representativeMixedUniversityRows: 2,
-      officialSubjectNameTypos: 1
+      officialSubjectNameTypos: 1,
+      subjectGuideFilenameYearMetadata: 1
+    },
+    subjectGuide: {
+      reportNumber: '연구자료 ORM 2025-12-2',
+      publicationYear: 2025,
+      pdfPages: 604,
+      ordinarySubjects: 155,
+      sourceSha256: '0fccdb5ae9533db30d048aa05a5f84005377dad1a5168ee9bc0ff36d6c780d4b',
+      excludedFromSite: '제2부 계열별 과목 135개와 장문 주요 내용',
+      reason: '현재 보통교과 표의 범위를 유지하고, 원문 내 확인된 장문 내용 오류를 전파하지 않기 위함'
     },
     result: '공식 자료 전수 대조 완료'
   };
@@ -239,6 +249,10 @@
     'https://admission.ewha.ac.kr/admission/html/ewharo/noticeView.asp?idx=15317',
     'https://www.ice.go.kr/hakjeom/na/ntt/selectNttInfo.do?mi=10631&nttSn=3319686',
     'https://www.moe.go.kr/boardCnts/viewRenew.do?boardID=294&boardSeq=93459&lev=0',
+    'https://www.hscredit.kr/curriculum/subjects',
+    'https://www.hscredit.kr/curriculum/subjectInfo',
+    'https://www.gne.go.kr/h-creditsystem/user/bbs/BD_selectBbs.do?q_bbsDocNo=20250826110443671&q_bbsSn=1129',
+    'https://www.ne.go.kr/user/bbs/BD_selectBbs.do?q_bbsDocNo=20260121102419070&q_bbsSn=1016',
     'https://www.snue.ac.kr/admission/na/ntt/selectNttInfo.do?bbsId=3073&mi=3376&nttSn=11128',
     'https://admission.dnue.ac.kr/ipsi/CMS/Board/Board.do?mCode=MN026',
     'https://enter.bnue.ac.kr/',

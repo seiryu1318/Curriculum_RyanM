@@ -3453,3 +3453,159 @@ html {
 
 .mobile-app .search-form { background: transparent !important; }
 .mobile-app .search-actions .exact-match-option { min-height: 40px !important; }
+
+/* ver.51 — official 2022 curriculum subject guide */
+.mobile-app .table-footnote,
+.mobile-app .table-footnote:has(button[hidden]) {
+  display: flex !important;
+  gap: 9px;
+  align-items: flex-start;
+  justify-content: space-between !important;
+}
+.mobile-app .table-footnote p {
+  margin: 0;
+  color: #acc3c1 !important;
+  font-size: 11px !important;
+  line-height: 1.55;
+}
+.mobile-app .table-footnote p strong { color: #d7ee91 !important; }
+.mobile-app .course {
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+  font-family: inherit;
+}
+.mobile-app .course:focus-visible {
+  outline: 2px solid #c6e987 !important;
+  outline-offset: 2px;
+}
+.mobile-app .subject-guide-dialog {
+  position: fixed !important;
+  inset: 0 !important;
+  width: calc(100% - 20px);
+  max-height: 88svh;
+  padding: 0;
+  margin: auto !important;
+  overflow: hidden;
+  color: #edf8f6;
+  background: rgba(3, 25, 33, .97);
+  border: 1px solid rgba(199, 231, 225, .22);
+  border-radius: 14px;
+  box-shadow: 0 26px 72px rgba(0, 7, 12, .58), inset 0 1px 0 rgba(255, 255, 255, .08);
+}
+.mobile-app .subject-guide-dialog::backdrop {
+  background: rgba(0, 7, 11, .76);
+  -webkit-backdrop-filter: blur(7px);
+  backdrop-filter: blur(7px);
+}
+.mobile-app .subject-guide-dialog__header {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 20px 18px 15px;
+  border-bottom: 1px solid rgba(210, 239, 233, .12);
+}
+.mobile-app .subject-guide-dialog__eyebrow {
+  margin: 0;
+  color: #b8d888;
+  font-size: 10px;
+  font-weight: 850;
+  letter-spacing: .05em;
+}
+.mobile-app .subject-guide-dialog h2 {
+  margin: 5px 0 0;
+  color: #fff;
+  font-size: 23px;
+  letter-spacing: -.04em;
+}
+.mobile-app .subject-guide-dialog__close {
+  display: grid;
+  width: 40px;
+  height: 40px;
+  flex: 0 0 40px;
+  padding: 0;
+  place-items: center;
+  color: #d5e5e3;
+  background: rgba(231, 250, 246, .07);
+  border: 1px solid rgba(220, 244, 239, .16);
+  border-radius: 11px;
+  cursor: pointer;
+  font: inherit;
+  font-size: 23px;
+}
+.mobile-app .subject-guide-dialog__close:active,
+.mobile-app .subject-guide-dialog__close:focus-visible {
+  color: #0b2824;
+  background: #b7d684;
+  outline: 0;
+}
+.mobile-app .subject-guide-dialog__status {
+  margin: 0;
+  padding: 24px 18px 27px;
+  color: #b6cac8;
+  font-size: 14px;
+}
+.mobile-app .subject-guide-dialog__content {
+  max-height: calc(88svh - 88px);
+  padding: 18px;
+  overflow-y: auto;
+  scrollbar-color: rgba(184, 216, 132, .42) transparent;
+  scrollbar-width: thin;
+}
+.mobile-app .subject-guide-dialog__tagline {
+  margin: 0 0 17px;
+  color: #f2f8f6;
+  font-size: 15px;
+  font-weight: 720;
+  line-height: 1.7;
+}
+.mobile-app .subject-guide-dialog__facts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin: 0;
+}
+.mobile-app .subject-guide-dialog__facts > div {
+  min-width: 0;
+  padding: 11px 12px;
+  background: rgba(225, 243, 238, .055);
+  border: 1px solid rgba(205, 234, 227, .11);
+  border-radius: 8px;
+}
+.mobile-app .subject-guide-dialog__facts dt {
+  margin: 0 0 4px;
+  color: #88aaa7;
+  font-size: 10px;
+  font-weight: 760;
+}
+.mobile-app .subject-guide-dialog__facts dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+  color: #f1fbf8;
+  font-size: 13px;
+  font-weight: 840;
+}
+.mobile-app .subject-guide-dialog__credit-note,
+.mobile-app .subject-guide-dialog__caution {
+  margin: 12px 0 0;
+  color: #afc6c3;
+  font-size: 11px;
+  line-height: 1.6;
+}
+.mobile-app .subject-guide-dialog__credit-note { color: #dceebd; }
+.mobile-app .subject-guide-dialog__credit-note strong { color: #d8f08f; }
+.mobile-app .subject-guide-dialog__source {
+  display: inline-flex;
+  margin-top: 12px;
+  color: #b9dc86;
+  font-size: 10px;
+  font-weight: 760;
+  line-height: 1.55;
+  text-decoration: underline;
+  text-decoration-color: rgba(185, 220, 134, .42);
+  text-underline-offset: 3px;
+}
+@media (max-width: 340px) {
+  .mobile-app .subject-guide-dialog__facts { grid-template-columns: minmax(0, 1fr); }
+}

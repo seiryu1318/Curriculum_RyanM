@@ -1,7 +1,8 @@
 // 이 값을 '01', '02', '03'처럼 올리면 문서 제목과 화면 버전이 함께 갱신됩니다.
-const APP_VERSION = '50';
+const APP_VERSION = '51';
 const WELCOME_HIDE_UNTIL_KEY = 'ryanSubjectFinderWelcomeHideUntil';
 const ONE_DAY_MS = 24 * 60 * 60 * 1000;
+const SUBJECT_GUIDE_SCRIPT = `subject-guide-data.js?v=${APP_VERSION}`;
 const APP_TITLE = `라이언의 2022 선택과목 검색기(ver.${APP_VERSION})`;
 document.title = APP_TITLE;
 document.querySelectorAll('[data-app-version]').forEach((element) => {
@@ -218,6 +219,20 @@ const elements = {
   schoolCourseDialogSummary: document.querySelector('#schoolCourseDialogSummary'),
   schoolCourseDialogBody: document.querySelector('#schoolCourseDialogBody'),
   schoolCourseDialogClose: document.querySelector('#schoolCourseDialogClose'),
+  subjectGuideDialog: document.querySelector('#subjectGuideDialog'),
+  subjectGuideDialogClose: document.querySelector('#subjectGuideDialogClose'),
+  subjectGuideTitle: document.querySelector('#subjectGuideTitle'),
+  subjectGuideStatus: document.querySelector('#subjectGuideStatus'),
+  subjectGuideContent: document.querySelector('#subjectGuideContent'),
+  subjectGuideTagline: document.querySelector('#subjectGuideTagline'),
+  subjectGuideType: document.querySelector('#subjectGuideType'),
+  subjectGuideGroup: document.querySelector('#subjectGuideGroup'),
+  subjectGuideCredits: document.querySelector('#subjectGuideCredits'),
+  subjectGuideAchievement: document.querySelector('#subjectGuideAchievement'),
+  subjectGuideRank: document.querySelector('#subjectGuideRank'),
+  subjectGuideCsat: document.querySelector('#subjectGuideCsat'),
+  subjectGuideDefaultCredit: document.querySelector('#subjectGuideDefaultCredit'),
+  subjectGuideSource: document.querySelector('#subjectGuideSource'),
   scrollTopButton: document.querySelector('#scrollTopButton'),
   welcomeDialog: document.querySelector('#welcomeDialog'),
   welcomeHideDay: document.querySelector('#welcomeHideDay'),
@@ -643,9 +658,73 @@ function renderCourseCell(subjects) {
   if (!visibleSubjects.length) return '<span class="empty-cell">없음</span>';
   return `<div class="subject-list">${visibleSubjects.map((subject) => {
     const label = subject.replace(/\*$/, '');
-    const marked = subject.endsWith('*') ? `${label}<sup>*</sup>` : label;
-    return `<span class="${courseClass(subject)}" data-subject="${label}">${marked}</span>`;
+    const safeLabel = escapeHtml(label);
+    const marked = subject.endsWith('*') ? `${safeLabel}<sup>*</sup>` : safeLabel;
+    return `<button type="button" class="${courseClass(subject)}" data-subject="${safeLabel}" aria-label="${safeLabel} 과목 안내 보기">${marked}</button>`;
   }).join('')}</div>`;
+}
+
+let subjectGuideLoadPromise = null;
+let subjectGuideReturnFocus = null;
+
+function loadSubjectGuideData() {
+  if (window.SUBJECT_GUIDE_DATA?.subjects) return Promise.resolve(window.SUBJECT_GUIDE_DATA);
+  if (subjectGuideLoadPromise) return subjectGuideLoadPromise;
+  subjectGuideLoadPromise = new Promise((resolve, reject) => {
+    const script = document.createElement('script');
+    script.src = SUBJECT_GUIDE_SCRIPT;
+    script.async = true;
+    script.addEventListener('load', () => {
+      if (window.SUBJECT_GUIDE_DATA?.subjects) resolve(window.SUBJECT_GUIDE_DATA);
+      else reject(new Error('과목 안내 데이터 형식이 올바르지 않습니다.'));
+    }, { once: true });
+    script.addEventListener('error', () => reject(new Error('과목 안내 데이터를 불러오지 못했습니다.')), { once: true });
+    document.head.append(script);
+  });
+  return subjectGuideLoadPromise;
+}
+
+function showSubjectGuideDialog() {
+  if (elements.subjectGuideDialog.open) return;
+  if (typeof elements.subjectGuideDialog.showModal === 'function') elements.subjectGuideDialog.showModal();
+  else elements.subjectGuideDialog.setAttribute('open', '');
+}
+
+function renderSubjectGuide(subject, guide) {
+  const meta = guide.meta;
+  const row = guide.subjects[subject];
+  if (!row) throw new Error(`${subject} 과목 안내를 찾지 못했습니다.`);
+
+  const csatLabels = { '○': '출제', '×': '미출제', '선택': '제2외국어·한문 선택', '-': '해당 없음' };
+  elements.subjectGuideTitle.textContent = subject;
+  elements.subjectGuideTagline.textContent = row.tagline;
+  elements.subjectGuideType.textContent = row.type;
+  elements.subjectGuideGroup.textContent = row.group.replace(/\s*\n\s*/g, ' ');
+  elements.subjectGuideCredits.textContent = row.credits;
+  elements.subjectGuideAchievement.textContent = row.achievement;
+  elements.subjectGuideRank.textContent = row.rankGrade === '×' ? '미산출' : row.rankGrade;
+  elements.subjectGuideCsat.textContent = csatLabels[row.csat] || row.csat;
+  elements.subjectGuideDefaultCredit.hidden = !row.defaultTwoCredits;
+  elements.subjectGuideSource.textContent = `${meta.publisher} · ${meta.reportNumber} · 책자 ${row.printedPage}쪽`;
+  elements.subjectGuideSource.href = meta.officialUrl;
+  elements.subjectGuideStatus.hidden = true;
+  elements.subjectGuideContent.hidden = false;
+}
+
+function openSubjectGuide(subject, trigger) {
+  subjectGuideReturnFocus = trigger;
+  elements.subjectGuideTitle.textContent = subject;
+  elements.subjectGuideStatus.textContent = '공식 과목 안내를 불러오는 중입니다.';
+  elements.subjectGuideStatus.hidden = false;
+  elements.subjectGuideContent.hidden = true;
+  showSubjectGuideDialog();
+
+  loadSubjectGuideData()
+    .then((guide) => renderSubjectGuide(subject, guide))
+    .catch((error) => {
+      elements.subjectGuideStatus.textContent = error.message;
+      elements.subjectGuideStatus.hidden = false;
+    });
 }
 
 function renderCurriculum() {
@@ -1131,6 +1210,20 @@ elements.schoolCourseListButton.addEventListener('click', () => {
 elements.schoolCourseDialogClose.addEventListener('click', () => elements.schoolCourseDialog.close());
 elements.schoolCourseDialog.addEventListener('click', (event) => {
   if (event.target === elements.schoolCourseDialog) elements.schoolCourseDialog.close();
+});
+
+elements.curriculumBody.addEventListener('click', (event) => {
+  const course = event.target.closest('button.course[data-subject]');
+  if (course) openSubjectGuide(course.dataset.subject, course);
+});
+
+elements.subjectGuideDialogClose.addEventListener('click', () => elements.subjectGuideDialog.close());
+elements.subjectGuideDialog.addEventListener('click', (event) => {
+  if (event.target === elements.subjectGuideDialog) elements.subjectGuideDialog.close();
+});
+elements.subjectGuideDialog.addEventListener('close', () => {
+  if (subjectGuideReturnFocus?.isConnected) subjectGuideReturnFocus.focus();
+  subjectGuideReturnFocus = null;
 });
 
 function updateScrollTopButton() {

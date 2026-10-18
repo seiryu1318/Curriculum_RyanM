@@ -2,7 +2,7 @@
 window.REPRESENTATIVE_MAJOR_DATA = {
   "schema": 1,
   "title": "2028학년도 계열별 대표 모집단위별 반영과목",
-  "audited": "2026-10-14",
+  "audited": "2026-10-19",
   "source": {
     "authority": "대입정보포털 어디가·한국대학교육협의회 대입상담센터",
     "page": "https://www.adiga.kr/uct/ces/archiveView.do?menuId=PCUCTCES1000&prtlBbsId=26611",
