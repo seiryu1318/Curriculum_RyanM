@@ -3633,3 +3633,11 @@ html {
   white-space: nowrap;
 }
 .mobile-app .legend .course-index--csat { min-width: 27px; margin-right: 1px; }
+
+/* ver.53 — center subject-guide facts inside every card */
+.mobile-app .subject-guide-dialog__facts > div {
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  text-align: center;
+}
