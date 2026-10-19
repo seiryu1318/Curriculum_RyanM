@@ -3609,3 +3609,27 @@ html {
 @media (max-width: 340px) {
   .mobile-app .subject-guide-dialog__facts { grid-template-columns: minmax(0, 1fr); }
 }
+
+/* ver.52 — index every 2028 CSAT-tested subject without replacing other states */
+.mobile-app .course.csat-tested { column-gap: 5px !important; }
+.mobile-app .course-index--csat {
+  display: inline-flex;
+  min-width: 27px;
+  height: 18px;
+  flex: 0 0 auto;
+  padding: 0 4px;
+  align-items: center;
+  justify-content: center;
+  color: #10272b;
+  background: #e7c96e;
+  border: 1px solid rgba(255, 238, 174, .78);
+  border-radius: 999px;
+  box-shadow: 0 0 0 1px rgba(4, 25, 32, .25), 0 2px 8px rgba(0, 7, 12, .2);
+  font-size: 9px;
+  font-style: normal;
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: -.02em;
+  white-space: nowrap;
+}
+.mobile-app .legend .course-index--csat { min-width: 27px; margin-right: 1px; }

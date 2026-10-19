@@ -1,5 +1,5 @@
 // 이 값을 '01', '02', '03'처럼 올리면 문서 제목과 화면 버전이 함께 갱신됩니다.
-const APP_VERSION = '51';
+const APP_VERSION = '52';
 const WELCOME_HIDE_UNTIL_KEY = 'ryanSubjectFinderWelcomeHideUntil';
 const ONE_DAY_MS = 24 * 60 * 60 * 1000;
 const SUBJECT_GUIDE_SCRIPT = `subject-guide-data.js?v=${APP_VERSION}`;
@@ -81,6 +81,17 @@ const SUBJECT_GROUPS = [
     convergence: ['인간과 경제활동', '논술']
   }
 ];
+
+// 2028학년도 수능 출제 대상: 공통·일반선택 직접 출제(○)와
+// 제2외국어·한문 선택영역(선택)을 함께 표시한다.
+const CSAT_TESTED_SUBJECTS = new Set([
+  '화법과 언어', '독서와 작문', '문학',
+  '대수', '미적분Ⅰ', '확률과 통계',
+  '영어Ⅰ', '영어Ⅱ',
+  '한국사1', '한국사2', '통합사회1', '통합사회2',
+  '통합과학1', '통합과학2',
+  '독일어', '프랑스어', '스페인어', '중국어', '일본어', '러시아어', '아랍어', '베트남어', '한문'
+]);
 
 const SCHOOL_OFFERINGS = {
   '2025': {
@@ -647,6 +658,7 @@ function courseClass(subject) {
   const plainSubject = subject.replace(/\*$/, '');
   const classes = ['course'];
   if (isSchoolOffered(plainSubject)) classes.push('school-offered');
+  if (CSAT_TESTED_SUBJECTS.has(plainSubject)) classes.push('csat-tested');
   if (state.core.has(plainSubject)) classes.push('core');
   if (state.recommended.has(plainSubject)) classes.push('recommended');
   if (state.highlightOnly && !state.core.has(plainSubject) && !state.recommended.has(plainSubject)) classes.push('is-muted');
@@ -660,7 +672,12 @@ function renderCourseCell(subjects) {
     const label = subject.replace(/\*$/, '');
     const safeLabel = escapeHtml(label);
     const marked = subject.endsWith('*') ? `${safeLabel}<sup>*</sup>` : safeLabel;
-    return `<button type="button" class="${courseClass(subject)}" data-subject="${safeLabel}" aria-label="${safeLabel} 과목 안내 보기">${marked}</button>`;
+    const isCsatTested = CSAT_TESTED_SUBJECTS.has(label);
+    const csatIndex = isCsatTested
+      ? '<span class="course-index course-index--csat" aria-hidden="true">수능</span>'
+      : '';
+    const csatDescription = isCsatTested ? ', 수능 출제 과목' : '';
+    return `<button type="button" class="${courseClass(subject)}" data-subject="${safeLabel}" aria-label="${safeLabel} 과목 안내 보기${csatDescription}">${marked}${csatIndex}</button>`;
   }).join('')}</div>`;
 }
 
