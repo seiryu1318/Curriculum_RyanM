@@ -216,7 +216,7 @@
   const source = window.UNIVERSITY_DATA_SOURCE || (window.UNIVERSITY_DATA_SOURCE = {});
   source.universities = Object.keys(data).length;
   source.records = Object.values(data).flat().length;
-  source.audited = '2026-10-19';
+  source.audited = '2026-11-17';
   source.audit = {
     scope: '전체 대학·모집단위, 대표 모집단위 16개, 2025·2026 본교 개설 과목, 2022 개정 교육과정 보통교과 155개 및 과목별 안내',
     authorities: ['대입정보포털 어디가', '한국대학교육협의회 대입상담센터', '대학교 입학처 공식 발표 자료', '교육부·한국교육과정평가원 고교학점제 공식자료', '국가교육위원회·시도교육청 공식 고시·발간자료'],

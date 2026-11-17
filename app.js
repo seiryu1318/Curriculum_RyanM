@@ -1,5 +1,5 @@
 // 이 값을 '01', '02', '03'처럼 올리면 문서 제목과 화면 버전이 함께 갱신됩니다.
-const APP_VERSION = '53';
+const APP_VERSION = '54';
 const WELCOME_HIDE_UNTIL_KEY = 'ryanSubjectFinderWelcomeHideUntil';
 const ONE_DAY_MS = 24 * 60 * 60 * 1000;
 const SUBJECT_GUIDE_SCRIPT = `subject-guide-data.js?v=${APP_VERSION}`;
@@ -190,6 +190,7 @@ const state = {
 };
 
 const elements = {
+  homeLink: document.querySelector('#homeLink'),
   searchForm: document.querySelector('#searchForm'),
   searchButton: document.querySelector('#searchButton'),
   searchResetButton: document.querySelector('#searchResetButton'),
@@ -1020,6 +1021,12 @@ function setActiveView(view, options = {}) {
   }
 }
 
+function returnToHome() {
+  setActiveView('search', { scroll: false });
+  const behavior = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth';
+  window.scrollTo({ top: 0, behavior });
+}
+
 function loadUniversityDetails(university, preferredKey) {
   const query = compact(elements.detailMajorSearch.value);
   const candidates = state.searchIndex.filter((entry) => entry.university === university);
@@ -1188,6 +1195,11 @@ elements.detailMajorSearch.addEventListener('input', () => {
 elements.viewTabs.addEventListener('click', (event) => {
   const button = event.target.closest('button[data-view]');
   if (button) setActiveView(button.dataset.view);
+});
+
+elements.homeLink.addEventListener('click', (event) => {
+  event.preventDefault();
+  returnToHome();
 });
 
 elements.highlightOnly.addEventListener('change', () => {
